@@ -246,7 +246,7 @@ class RoBERTaMultiNER2(RobertaForTokenClassification):
 
         outputs = (logits, sequence_output)
         # TODO: Make this generic (?)
-        return dise_logits, sequence_output
+        return dise_logits
         if labels is not None:
             loss_fct = CrossEntropyLoss()
             # Only keep active parts of the loss
