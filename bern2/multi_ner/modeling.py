@@ -245,6 +245,8 @@ class RoBERTaMultiNER2(RobertaForTokenClassification):
             logits = dise_logits + chem_logits + gene_logits + spec_logits + cellline_logits + dna_logits + rna_logits + protein_logits + celltype_logits
 
         outputs = (logits, sequence_output)
+        # TODO: Make this generic (?)
+        return dise_logits, sequence_output
         if labels is not None:
             loss_fct = CrossEntropyLoss()
             # Only keep active parts of the loss
