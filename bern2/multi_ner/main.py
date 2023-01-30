@@ -758,32 +758,15 @@ class MTNER:
             with torch.no_grad():
                 outputs = model(**inputs)
                 if has_labels:
-                    step_eval_loss, logits = outputs[:2]
-                    eval_losses += [step_eval_loss.mean().item()]
+                    dise_logits = outputs
                 else:
                     logits = outputs[0]
 
             if not prediction_loss_only:
-                (dise_logits, chem_logits, gene_logits, spec_logits, cl_logits, dna_logits, rna_logits, _,
-                 ct_logits) = logits
                 if dise_preds is None and chem_preds is None and gene_preds is None and spec_preds is None and cl_preds is None and dna_preds is None and rna_preds is None and ct_preds is None:
                     dise_preds = dise_logits.detach()
-                    chem_preds = chem_logits.detach()
-                    gene_preds = gene_logits.detach()
-                    spec_preds = spec_logits.detach()
-                    cl_preds = cl_logits.detach()
-                    dna_preds = dna_logits.detach()
-                    rna_preds = rna_logits.detach()
-                    ct_preds = ct_logits.detach()
                 else:
                     dise_preds = torch.cat((dise_preds, dise_logits.detach()), dim=0)
-                    chem_preds = torch.cat((chem_preds, chem_logits.detach()), dim=0)
-                    gene_preds = torch.cat((gene_preds, gene_logits.detach()), dim=0)
-                    spec_preds = torch.cat((spec_preds, spec_logits.detach()), dim=0)
-                    cl_preds = torch.cat((cl_preds, cl_logits.detach()), dim=0)
-                    dna_preds = torch.cat((dna_preds, dna_logits.detach()), dim=0)
-                    rna_preds = torch.cat((rna_preds, rna_logits.detach()), dim=0)
-                    ct_preds = torch.cat((ct_preds, ct_logits.detach()), dim=0)
                 if inputs.get("labels") is not None:
                     if label_ids is None:
                         label_ids = inputs["labels"].detach()
@@ -791,26 +774,12 @@ class MTNER:
                         label_ids = torch.cat((label_ids, inputs["labels"].detach()), dim=0)
 
         # Finally, turn the aggregated tensors into numpy arrays.
-        if dise_preds is not None and chem_preds is not None and gene_preds is not None and spec_preds is not None:
+        if dise_preds is not None:
             dise_preds = dise_preds.cpu().numpy()
-            chem_preds = chem_preds.cpu().numpy()
-            gene_preds = gene_preds.cpu().numpy()
-            spec_preds = spec_preds.cpu().numpy()
-            cl_preds = cl_preds.cpu().numpy()
-            dna_preds = dna_preds.cpu().numpy()
-            rna_preds = rna_preds.cpu().numpy()
-            ct_preds = ct_preds.cpu().numpy()
         if label_ids is not None:
             label_ids = label_ids.cpu().numpy()
 
-        return_output = (PredictionOutput(predictions=dise_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=chem_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=gene_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=spec_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=cl_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=dna_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=rna_preds, label_ids=label_ids), \
-                         PredictionOutput(predictions=ct_preds, label_ids=label_ids))
+        return_output = (PredictionOutput(predictions=dise_preds, label_ids=label_ids),)
 
         return return_output
 
