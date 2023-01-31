@@ -35,3 +35,5 @@ class TritonModelProxy:
         return np.concatenate(res)
     def to(self, *args, **kwargs):
         return self
+    def eval(self, *args, **kwargs):
+        pass
