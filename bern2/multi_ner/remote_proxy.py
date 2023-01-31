@@ -10,7 +10,7 @@ class TritonModelProxy:
         self.batch_size=batch_size
     def __call__(self, *args, **kwargs):
         runtime_sm_client = boto3.client(service_name="sagemaker-runtime",
-                                         aws_access_key_id=os.environ['AwsAccessKeyId'],
+                                         aws_access_key_id=os.environ['AwsAccessKey'],
                                          aws_secret_access_key=os.environ['AwsSecretAccessKey'])
         input_ids = kwargs['input_ids']
         attention_mask = kwargs['attention_mask']
