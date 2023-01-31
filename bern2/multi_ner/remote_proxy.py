@@ -4,14 +4,16 @@ import os
 import boto3
 import numpy as np
 
-
-def create_remote_inference_proxy(model_name='bern2', batch_size=4):
-    def call_remote_inference(**inputs):
+class TritonModelProxy:
+    def __init__(self, model_name, batch_size=32):
+        self.model_name=model_name
+        self.batch_size=batch_size
+    def __call__(self, *args, **kwargs):
         runtime_sm_client = boto3.client(service_name="sagemaker-runtime",
                                          aws_access_key_id=os.environ['AwsAccessKeyId'],
                                          aws_secret_access_key=os.environ['AwsSecretAccessKey'])
-        input_ids = inputs['input_ids']
-        attention_mask = inputs['attention_mask']
+        input_ids = kwargs['input_ids']
+        attention_mask = kwargs['attention_mask']
         i = 0
         res = list()
 
@@ -31,5 +33,5 @@ def create_remote_inference_proxy(model_name='bern2', batch_size=4):
             res.append(parsed_data)
 
         return np.concatenate(res)
-
-    return call_remote_inference
+    def to(self, *args, **kwargs):
+        return self

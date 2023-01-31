@@ -31,7 +31,7 @@ from torch import nn
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.sampler import SequentialSampler
-from bern2.multi_ner.remote_proxy import create_remote_inference_proxy
+from bern2.multi_ner.remote_proxy import TritonModelProxy
 from transformers import (
     AutoConfig,
     AutoTokenizer,
@@ -519,7 +519,7 @@ class MTNER:
             self.params.model_name_or_path,
         )
         if self.params.use_remote_proxy:
-            self.model = create_remote_inference_proxy('bern2', batch_size=self.params.batch_size)
+            self.model = TritonModelProxy(self.params.model_name_or_path.split("/")[-1], batch_size=self.params.batch_size)
         else:
             self.model = RoBERTaMultiNER2.from_pretrained(
                 self.params.model_name_or_path,
