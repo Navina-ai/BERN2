@@ -519,7 +519,7 @@ class MTNER:
             self.params.model_name_or_path,
         )
         if self.params.use_remote_proxy:
-            print("Insert code for triton here")
+            self.model = create_remote_inference_proxy('bern2')
         else:
             self.model = RoBERTaMultiNER2.from_pretrained(
                 self.params.model_name_or_path,
