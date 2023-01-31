@@ -1,6 +1,6 @@
 import json
 import os
-
+from torch import Tensor
 import boto3
 import numpy as np
 
@@ -32,7 +32,7 @@ class TritonModelProxy:
             parsed_data = np.array(parsed_response['data']).reshape(parsed_response['shape'])
             res.append(parsed_data)
 
-        return np.concatenate(res)
+        return Tensor(np.concatenate(res))
     def to(self, *args, **kwargs):
         return self
     def eval(self, *args, **kwargs):
