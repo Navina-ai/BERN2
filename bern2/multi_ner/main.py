@@ -31,7 +31,7 @@ from torch import nn
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.sampler import SequentialSampler
-
+from bern2.multi_ner.remote_proxy import create_remote_inference_proxy
 from transformers import (
     AutoConfig,
     AutoTokenizer,
