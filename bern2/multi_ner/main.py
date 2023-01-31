@@ -31,7 +31,7 @@ from torch import nn
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.sampler import SequentialSampler
-
+from bern2.multi_ner.remote_proxy import TritonModelProxy
 from transformers import (
     AutoConfig,
     AutoTokenizer,
@@ -518,11 +518,14 @@ class MTNER:
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.params.model_name_or_path,
         )
-        self.model = RoBERTaMultiNER2.from_pretrained(
-            self.params.model_name_or_path,
-            num_labels=self.num_labels,
-            config=self.config,
-        )
+        if self.params.use_remote_proxy:
+            self.model = TritonModelProxy(self.params.model_name_or_path.split("/")[-1], batch_size=self.params.batch_size)
+        else:
+            self.model = RoBERTaMultiNER2.from_pretrained(
+                self.params.model_name_or_path,
+                num_labels=self.num_labels,
+                config=self.config,
+            )
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.model = self.model.to(self.device)
         self.entity_types = ['disease', 'drug', 'gene', 'species', 'cell_line', 'DNA', 'RNA', 'cell_type']
@@ -753,7 +756,7 @@ class MTNER:
 
             for k, v in inputs.items():
                 if isinstance(v, torch.Tensor):
-                    inputs[k] = v.to(self.model.device)
+                    inputs[k] = v.to(self.device)
 
             with torch.no_grad():
                 outputs = model(**inputs)
