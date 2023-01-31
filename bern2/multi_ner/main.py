@@ -756,7 +756,7 @@ class MTNER:
 
             for k, v in inputs.items():
                 if isinstance(v, torch.Tensor):
-                    inputs[k] = v.to(self.model.device)
+                    inputs[k] = v.to(self.device)
 
             with torch.no_grad():
                 outputs = model(**inputs)
