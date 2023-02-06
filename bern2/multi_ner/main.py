@@ -809,6 +809,8 @@ class MTNER:
             os.makedirs(self.params.model_name_or_path)
 
         for model_file_s3_path in model_files_s3_paths:
+            if 'model.bin' in model_file_s3_path and not self.params.download_model_bin_file:
+                continue
             model_file_local_path = os.path.join(self.params.model_name_or_path, model_file_s3_path.split('/')[-1])
             if not os.path.exists(model_file_local_path):
                 s3.download_file(self.params.s3_bucket, model_file_s3_path, model_file_local_path)

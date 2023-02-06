@@ -26,6 +26,7 @@ argparser.add_argument("--use_neural_normalizer", action="store_true")
 argparser.add_argument("--keep_files", action="store_true")
 argparser.add_argument("--ner_model_name_or_path", type=str, default="dmis-lab/bern2-ner")
 argparser.add_argument("--load_model_manually", action="store_true")
+argparser.add_argument("--download_model_bin_file", action="store_true")
 argparser.add_argument("--s3_bucket", type=str, default="data-science-repository")
 argparser.add_argument("--local_output", type=str, default="local_output")
 argparser.add_argument("--use_remote_proxy", action="store_true")
@@ -51,6 +52,7 @@ class LocalBERN2():
                  use_neural_normalizer=True,
                  ner_model_name_or_path='dmis-lab/bern2-ner',
                  load_model_manually=False,
+                 download_model_bin_file=True,
                  keep_files=False,
                  s3_bucket='data-science-repository',
                  local_output='local_output',
@@ -61,6 +63,7 @@ class LocalBERN2():
         self.time_format = time_format
         self.ner_model_name_or_path = ner_model_name_or_path
         self.load_model_manually = load_model_manually
+        self.download_model_bin_file = download_model_bin_file
         self.s3_bucket = s3_bucket
         self.local_output = local_output
         self.use_remote_proxy = use_remote_proxy
@@ -359,11 +362,13 @@ class LocalBERN2():
         argparser.add_argument("--local_output", type=str, default="local_output")
         argparser.add_argument("--use_remote_proxy", action="store_true")
         argparser.add_argument('--batch_size', type=int, help='The batch size to be run.', default=4)
+        argparser.add_argument("--download_model_bin_file", action="store_true")
         mt_ner_params = argparser.parse_args()
         mt_ner_params.model_name_or_path = self.ner_model_name_or_path
         mt_ner_params.load_model_manually = self.load_model_manually
         mt_ner_params.use_remote_proxy = self.use_remote_proxy
         mt_ner_params.use_remote_proxy = self.batch_size
+        mt_ner_params.download_model_bin_file = self.download_model_bin_file
 
         mt_ner_model = MTNER(mt_ner_params)
         base_name = pubtator_file.split('.')[0]
@@ -457,6 +462,7 @@ def get_initialized_bern():
         keep_files=args.keep_files,
         ner_model_name_or_path=args.ner_model_name_or_path,
         load_model_manually=args.load_model_manually,
+        download_model_bin_file=args.download_model_bin_file,
         s3_bucket=args.s3_bucket,
         local_output=args.local_output,
         use_remote_proxy=args.use_remote_proxy,
