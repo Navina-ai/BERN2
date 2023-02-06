@@ -367,7 +367,7 @@ class LocalBERN2():
         mt_ner_params.model_name_or_path = self.ner_model_name_or_path
         mt_ner_params.load_model_manually = self.load_model_manually
         mt_ner_params.use_remote_proxy = self.use_remote_proxy
-        mt_ner_params.use_remote_proxy = self.batch_size
+        mt_ner_params.batch_size = self.batch_size
         mt_ner_params.download_model_bin_file = self.download_model_bin_file
 
         mt_ner_model = MTNER(mt_ner_params)
