@@ -16,23 +16,25 @@ from bern2.bern2.convert import get_pub_annotation
 from bern2.multi_ner.main import MTNER
 from bern2.multi_ner.ner_server import mtner_recognize
 
-argparser = argparse.ArgumentParser()
-argparser.add_argument('--max_word_len', type=int, help='word max chars', default=50)
-argparser.add_argument('--seed', type=int, help='seed value', default=2019)
-argparser.add_argument('--mtner_home', help='biomedical language model home',
-                       default=os.path.join(os.path.expanduser('~'), 'bern', 'mtnerHome'))
-argparser.add_argument('--time_format', help='time format', default='[%d/%b/%Y %H:%M:%S.%f]')
-argparser.add_argument("--use_neural_normalizer", action="store_true")
-argparser.add_argument("--keep_files", action="store_true")
-argparser.add_argument("--ner_model_name_or_path", type=str, default="dmis-lab/bern2-ner")
-argparser.add_argument("--load_model_manually", action="store_true")
-argparser.add_argument("--download_model_bin_file", action="store_true")
-argparser.add_argument("--s3_bucket", type=str, default="data-science-repository")
-argparser.add_argument("--local_output", type=str, default="local_output")
-argparser.add_argument("--use_remote_proxy", action="store_true")
-argparser.add_argument('--batch_size', type=int, help='batch size', default=4)
+def parse():
+    argparser = argparse.ArgumentParser()
+    argparser.add_argument('--max_word_len', type=int, help='word max chars', default=50)
+    argparser.add_argument('--seed', type=int, help='seed value', default=2019)
+    argparser.add_argument('--mtner_home', help='biomedical language model home',
+                        default=os.path.join(os.path.expanduser('~'), 'bern', 'mtnerHome'))
+    argparser.add_argument('--time_format', help='time format', default='[%d/%b/%Y %H:%M:%S.%f]')
+    argparser.add_argument("--use_neural_normalizer", action="store_true")
+    argparser.add_argument("--keep_files", action="store_true")
+    argparser.add_argument("--ner_model_name_or_path", type=str, default="dmis-lab/bern2-ner")
+    argparser.add_argument("--load_model_manually", action="store_true")
+    argparser.add_argument("--download_model_bin_file", action="store_true")
+    argparser.add_argument("--s3_bucket", type=str, default="data-science-repository")
+    argparser.add_argument("--local_output", type=str, default="local_output")
+    argparser.add_argument("--use_remote_proxy", action="store_true")
+    argparser.add_argument('--batch_size', type=int, help='batch size', default=4)
 
-args = argparser.parse_args()
+    args = argparser.parse_args()
+    return args
 
 
 def append_text_to_pubtator(input_mtner: str, pmid: str, text: str):
@@ -435,6 +437,7 @@ def initialize_bern2_annotator(max_word_len: int = 50,
                                use_remote_proxy: bool = False, batch_size: int = 4):
     # initialize bern2
     if initialize_bern2_annotator.annotator is None:
+        args = parse()
         initialize_bern2_annotator.annotator = LocalBERN2(max_word_len=max_word_len,
                                                           seed=args.seed,
                                                           mtner_home=mtner_home,
@@ -453,6 +456,7 @@ initialize_bern2_annotator.annotator = None
 
 
 def get_initialized_bern():
+    args = parse()
     bern2 = LocalBERN2(
         max_word_len=args.max_word_len,
         seed=args.seed,
