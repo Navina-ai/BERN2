@@ -16,12 +16,13 @@ from bern2.bern2.convert import get_pub_annotation
 from bern2.multi_ner.main import MTNER
 from bern2.multi_ner.ner_server import mtner_recognize
 
+
 def parse():
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--max_word_len', type=int, help='word max chars', default=50)
     argparser.add_argument('--seed', type=int, help='seed value', default=2019)
     argparser.add_argument('--mtner_home', help='biomedical language model home',
-                        default=os.path.join(os.path.expanduser('~'), 'bern', 'mtnerHome'))
+                           default=os.path.join(os.path.expanduser('~'), 'bern', 'mtnerHome'))
     argparser.add_argument('--time_format', help='time format', default='[%d/%b/%Y %H:%M:%S.%f]')
     argparser.add_argument("--use_neural_normalizer", action="store_true")
     argparser.add_argument("--keep_files", action="store_true")
@@ -434,14 +435,14 @@ def initialize_bern2_annotator(max_word_len: int = 50,
                                use_neural_normalizer: bool = False, keep_files: bool = False,
                                ner_model_name_or_path: str = 'dmis-lab/bern2-ner', load_model_manually: bool = False,
                                s3_bucket: str = 'data-science-repository', local_output: str = 'local_output',
-                               use_remote_proxy: bool = False, batch_size: int = 4):
+                               use_remote_proxy: bool = False, batch_size: int = 4,
+                               seed: int = 2019, time_format: str = '[%d/%b/%Y %H:%M:%S.%f]'):
     # initialize bern2
     if initialize_bern2_annotator.annotator is None:
-        args = parse()
         initialize_bern2_annotator.annotator = LocalBERN2(max_word_len=max_word_len,
-                                                          seed=args.seed,
+                                                          seed=seed,
                                                           mtner_home=mtner_home,
-                                                          time_format=args.time_format,
+                                                          time_format=time_format,
                                                           use_neural_normalizer=use_neural_normalizer,
                                                           keep_files=keep_files,
                                                           ner_model_name_or_path=ner_model_name_or_path,
