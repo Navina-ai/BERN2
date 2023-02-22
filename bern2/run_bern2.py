@@ -424,8 +424,8 @@ def initialize_bern2_annotator(max_word_len: int = 50,
                                mtner_home: str = os.path.join(os.path.expanduser('~'), 'bern', 'mtnerHome'),
                                use_neural_normalizer: bool = False, keep_files: bool = False,
                                ner_model_name_or_path: str = 'dmis-lab/bern2-ner', load_model_manually: bool = False,
-                               download_model_bin_file: bool = True, s3_bucket: str = 'data-science-repository', local_output: str = 'local_output',
-                               use_remote_proxy: bool = False, batch_size: int = 4,
+                               download_model_bin_file: bool = True, s3_bucket: str = 'data-science-repository',
+                               local_output: str = 'local_output', use_remote_proxy: bool = False, batch_size: int = 4,
                                seed: int = 2019, time_format: str = '[%d/%b/%Y %H:%M:%S.%f]'):
     # initialize bern2
     if initialize_bern2_annotator.annotator is None:
