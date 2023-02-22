@@ -356,12 +356,13 @@ class LocalBERN2():
                                            mtner_home=None,
                                            disease_only=True,
                                            time_format="dmis-lab/bern2-ner",
-                                           ner_model_name_or_path=self.ner_model_name_or_path or 'dmis-lab/bern2-ner',
+                                           model_name_or_path=self.ner_model_name_or_path,
                                            load_model_manually=self.load_model_manually,
                                            s3_bucket='data-science-repository',
                                            local_output='local_output',
                                            use_remote_proxy=self.use_remote_proxy,
-                                           batch_size=self.batch_size, download_model_bin_file=self.download_model_bin_file)
+                                           batch_size=self.batch_size,
+                                           download_model_bin_file=self.download_model_bin_file)
 
         mt_ner_model = MTNER(mt_ner_params)
         base_name = pubtator_file.split('.')[0]
