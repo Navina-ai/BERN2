@@ -13,6 +13,7 @@ import pandas as pd
 
 from bern2.bern2.convert import get_pub_annotation
 # from bern2.normalizer import Normalizer
+from bern2.metrics import metrics
 from bern2.multi_ner.main import MTNER
 from bern2.multi_ner.ner_server import mtner_recognize
 
@@ -97,11 +98,14 @@ class LocalBERN2():
 
     def annotate_text(self, list_of_texts: list):
         # TODO: Make this a pd.Series instead of a list
-        list_of_texts = [text.strip() for text in list_of_texts]
-        base_name = self.generate_base_name(list_of_texts[0])  # for the name of temporary files
-        list_of_texts = [self.preprocess_input(text, base_name) for text in list_of_texts]
-        output = self.tag_entities(list_of_texts, base_name)
-        output = self.post_process_output(output)
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.convert_to_string.duration"):
+            list_of_texts = [text.strip() for text in list_of_texts]
+            base_name = self.generate_base_name(list_of_texts[0])  # for the name of temporary files
+            list_of_texts = [self.preprocess_input(text, base_name) for text in list_of_texts]
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.tag_entities.duration"):
+            output = self.tag_entities(list_of_texts, base_name)
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.post_process_output.duration"):
+            output = self.post_process_output(output)
         return output
 
     def post_process_output(self, output):
@@ -240,7 +244,8 @@ class LocalBERN2():
             append_text_to_pubtator(input_mtner, pmid, text)
 
         ner_start_time = time.time()
-        ner_result = self.ner(pubtator_file, output_mtner, base_name)
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.ner.duration"):
+            ner_result = self.ner(pubtator_file, output_mtner, base_name)
 
         mtner_elapse_time = ner_result['mtner_elapse_time']
 
@@ -281,7 +286,8 @@ class LocalBERN2():
         #       f'[{base_name}] Neural Normalization {n_norm_elapse_time} sec')
 
         # Convert to PubAnnotation JSON
-        tagged_docs = [get_pub_annotation(tagged_doc) for tagged_doc in tagged_docs]
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.get_pub_annotation.duration"):
+            tagged_docs = [get_pub_annotation(tagged_doc) for tagged_doc in tagged_docs]
 
         # norm_elapse_time = r_norm_elapse_time + n_norm_elapse_time
         # print(datetime.now().strftime(self.time_format),
@@ -363,13 +369,14 @@ class LocalBERN2():
                                            use_remote_proxy=self.use_remote_proxy,
                                            batch_size=self.batch_size,
                                            download_model_bin_file=self.download_model_bin_file)
-
-        mt_ner_model = MTNER(mt_ner_params)
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.initialize_mtner.duration"):
+            mt_ner_model = MTNER(mt_ner_params)
         base_name = pubtator_file.split('.')[0]
         # hotfix
         base_name = base_name.replace("\x00A", "")
 
-        mtner_recognize(mt_ner_model, pubtator_file, base_name, self.mtner_home)
+        with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.mtner_recognize.duration"):
+            mtner_recognize(mt_ner_model, pubtator_file, base_name, self.mtner_home)
 
         with open(output_mtner, 'r', encoding='utf-8') as f:
             tagged_docs = json.load(f)

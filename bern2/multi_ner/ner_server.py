@@ -4,6 +4,7 @@ import socket
 import struct
 import argparse
 
+from bern2.metrics import metrics
 from bern2.multi_ner.main import MTNER
 from bern2.multi_ner.ops import pubtator2dict_list
 
@@ -25,12 +26,14 @@ def mtner_recognize(model, dict_path, base_name, mtner_home):
     output_mt_ner = os.path.join(mtner_home, 'output',
                                  f'{dict_path}.json')
 
-    dict_list = pubtator2dict_list(input_mt_ner)
+    with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.pubtator2dict_list.duration"):
+        dict_list = pubtator2dict_list(input_mt_ner)
 
-    res = model.recognize(
-        input_dl=dict_list,
-        base_name=base_name
-    )
+    with metrics.timer(f"{os.getenv('RunEnv')}.temp_debug.inference.bern2.model_recognize.duration"):
+        res = model.recognize(
+            input_dl=dict_list,
+            base_name=base_name
+        )
 
     if res is None:
         return None, 0

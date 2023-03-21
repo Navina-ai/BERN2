@@ -12,3 +12,4 @@ faiss-cpu==1.7.3
 bioregistry
 python-dotenv~=0.19.2
 boto3~=1.26.25
+statsd~=3.3.0
