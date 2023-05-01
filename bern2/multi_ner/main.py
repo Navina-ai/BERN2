@@ -780,7 +780,7 @@ class MTNER:
                         label_ids = torch.cat((label_ids, inputs["labels"].detach()), dim=0)
 
         # Finally, turn the aggregated tensors into numpy arrays.
-        metrics.incr(f"{os.environ.get('RunEnv')}.temp_debug.inference.bern2.batch.count", i)
+        metrics.gauge(f"{os.environ.get('RunEnv')}.temp_debug.inference.bern2.batch.count", i)
         if dise_preds is not None:
             dise_preds = dise_preds.cpu().numpy()
         if label_ids is not None:
