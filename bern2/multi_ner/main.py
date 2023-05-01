@@ -31,6 +31,8 @@ from torch import nn
 from torch.utils.data.dataset import Dataset
 from torch.utils.data.dataloader import DataLoader
 from torch.utils.data.sampler import SequentialSampler
+
+from bern2.metrics import metrics
 from bern2.multi_ner.remote_proxy import TritonModelProxy
 from transformers import (
     AutoConfig,
@@ -750,8 +752,9 @@ class MTNER:
         ct_preds: torch.Tensor = None
         label_ids: torch.Tensor = None
         model.eval()
-
+        i=0
         for inputs in tqdm(dataloader, desc=description):
+            i+=1
             has_labels = any(inputs.get(k) is not None for k in ["labels", "lm_labels", "masked_lm_labels"])
 
             for k, v in inputs.items():
@@ -777,6 +780,7 @@ class MTNER:
                         label_ids = torch.cat((label_ids, inputs["labels"].detach()), dim=0)
 
         # Finally, turn the aggregated tensors into numpy arrays.
+        metrics.incr(f"{os.environ.get('RunEnv')}.temp_debug.inference.bern2.batch.count", i)
         if dise_preds is not None:
             dise_preds = dise_preds.cpu().numpy()
         if label_ids is not None:
