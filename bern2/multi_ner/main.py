@@ -115,15 +115,16 @@ class DataProcessor(object):
         words = []
         labels = []
         entity_labels = []
+        max_words_len = 20
         for pmid in pmids:
             for sent in data[pmid]['words']:
                 words = sent[:]
                 labels = ['O'] * len(words)
                 entity_labels = [str(0)] * len(words)
 
-                if len(words) >= 30:
-                    while len(words) >= 30:
-                        tmplabel = labels[:30]
+                if len(words) >= max_words_len:
+                    while len(words) >= max_words_len:
+                        tmplabel = labels[:max_words_len]
                         l = ' '.join([label for label
                                       in labels[:len(tmplabel)]
                                       if len(label) > 0])
