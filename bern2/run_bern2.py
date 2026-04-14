@@ -364,7 +364,7 @@ class LocalBERN2():
                                            time_format="dmis-lab/bern2-ner",
                                            model_name_or_path=self.ner_model_name_or_path,
                                            load_model_manually=self.load_model_manually,
-                                           s3_bucket='data-science-repository',
+                                           s3_bucket=self.s3_bucket,
                                            local_output='local_output',
                                            use_remote_proxy=self.use_remote_proxy,
                                            batch_size=self.batch_size,
