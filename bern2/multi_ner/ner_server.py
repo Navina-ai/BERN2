@@ -36,6 +36,9 @@ def mtner_recognize(model, dict_path, base_name, mtner_home):
         )
 
     if res is None:
+        # Delete temp files even if processing fails
+        os.remove(input_mt_ner)
+        os.remove(output_mt_ner)
         return None, 0
 
     # num_filtered_species_per_doc = filter_entities(res)
@@ -52,6 +55,10 @@ def mtner_recognize(model, dict_path, base_name, mtner_home):
     with open(output_mt_ner, 'w', encoding='utf-8') as f:
         json.dump(res, f)
 
+    # Delete temp files
+    os.remove(input_mt_ner)
+    os.remove(output_mt_ner)
+
 
 def run_server(model, args):
     host = args.mtner_host
@@ -66,7 +73,7 @@ def run_server(model, args):
             # hotfix
             base_name = base_name.replace("\x00A", "")
 
-            mtner_recognize(model, dict_path, base_name, args)
+            mtner_recognize(model, dict_path, base_name, args.mtner_home)
 
             output_stream = struct.pack('>H', len(dict_path)) + dict_path.encode(
                 'utf-8')
